@@ -17,7 +17,7 @@ public class HTTPThread extends NanoHTTPD {
 
     public static void iniciar() {
         try {
-            thread = new HTTPThread(8085);
+            thread = new HTTPThread(30001);
             System.out.println("Servidor iniciado");
         } catch (IOException e) {
             System.err.println("Couldn't start server:\n" + e);
