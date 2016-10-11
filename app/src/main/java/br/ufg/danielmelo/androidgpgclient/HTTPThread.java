@@ -1,23 +1,26 @@
 package br.ufg.danielmelo.androidgpgclient;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
 
+import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
 import fi.iki.elonen.NanoHTTPD;
+
 
 public class HTTPThread extends NanoHTTPD {
 
     private static HTTPThread thread;
+    private OpenPGPService openPgpService;
 
-    public HTTPThread(int port) throws IOException{
+    public HTTPThread(int port, OpenPGPService service) throws IOException{
         super(port);
+        this.openPgpService = service;
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
     }
 
-    public static void iniciar() {
+    public static void iniciar(OpenPGPService service) {
         try {
-            thread = new HTTPThread(30001);
+            thread = new HTTPThread(30001, service);
             System.out.println("Servidor iniciado");
         } catch (IOException e) {
             System.err.println("Couldn't start server:\n" + e);
@@ -26,14 +29,14 @@ public class HTTPThread extends NanoHTTPD {
     }
 
     @Override
-    public Response serve(IHTTPSession session) {
-        String msg = "<html><body><h1>Hello server</h1>\n";
-        Map<String, String> parms = session.getParms();
-        if (parms.get("username") == null) {
-            msg += "<form action='?' method='get'>\n  <p>Your name: <input type='text' name='username'></p>\n" + "</form>\n";
-        } else {
-            msg += "<p>Hello, " + parms.get("username") + "!</p>";
+    public Response serve(IHTTPSession session)  {
+
+        String testEncryption = null;
+        try {
+            testEncryption = openPgpService.encrypt("danielmelogpi1@gmail.com", "uma mensagem encriptada");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
-        return newFixedLengthResponse(msg + "</body></html>\n");
+        return newFixedLengthResponse(testEncryption);
     }
 }

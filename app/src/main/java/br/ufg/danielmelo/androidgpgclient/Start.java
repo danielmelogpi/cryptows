@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
 import br.ufg.danielmelo.androidgpgclient.util.IPUtil;
 
 import static android.provider.AlarmClock.EXTRA_MESSAGE;
@@ -28,7 +29,7 @@ public class Start extends AppCompatActivity {
 
     public static Activity startThis;
 
-    OpenPgpServiceConnection mServiceConnection;
+    public static OpenPGPService openPgpService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +38,8 @@ public class Start extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-
-        HTTPThread.iniciar();
-
-        mServiceConnection = new OpenPgpServiceConnection(this, "org.sufficientlysecure.keychain");
-        mServiceConnection.bindToService();
-
-        OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
+        openPgpService = new OpenPGPService(this);
+        HTTPThread.iniciar(openPgpService);
 
         TextView t = (TextView) findViewById(R.id.textView);
         String ip = IPUtil.wifiIpAddress(this.getBaseContext(), this);
@@ -82,6 +78,29 @@ public class Start extends AppCompatActivity {
     public void sendMessage(View view) {
         Intent intent = new Intent(this, BaseActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        openPgpService.unbind();
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // try again after user interaction
+        if (resultCode == OpenPgpApi.RESULT_CODE_SUCCESS) {
+            switch (requestCode) {
+                case 42: {
+//                    try {
+                        System.out.println(data.getExtras());
+//                    } catch (UnsupportedEncodingException e) {
+//                        e.printStackTrace();
+//                    }
+                    break;
+                }
+            }
+        }
     }
 
 
