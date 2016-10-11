@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 
@@ -100,6 +101,11 @@ public class Start extends AppCompatActivity {
                     break;
                 }
             }
+        }
+
+        if (resultCode == OpenPgpApi.RESULT_CODE_ERROR) {
+            OpenPgpError error = data.getParcelableExtra(OpenPgpApi.RESULT_ERROR);
+            System.err.println(error);
         }
     }
 

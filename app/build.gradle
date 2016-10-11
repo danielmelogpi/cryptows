@@ -29,4 +29,6 @@ dependencies {
     compile group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: '1.1.0'
     compile 'org.nanohttpd:nanohttpd:2.3.1'
     testCompile 'junit:junit:4.12'
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+
 }

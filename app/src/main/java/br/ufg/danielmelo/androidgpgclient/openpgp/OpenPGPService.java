@@ -9,7 +9,11 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.openintents.openpgp.IOpenPgpService2;
+import org.openintents.openpgp.OpenPgpDecryptionResult;
+import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.openintents.openpgp.util.OpenPgpAppPreference;
+import org.openintents.openpgp.util.OpenPgpKeyPreference;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 
 import java.io.ByteArrayInputStream;
@@ -37,11 +41,50 @@ public class OpenPGPService extends Activity {
         bind();
     }
 
+    public long getUserId(String mail) throws UnsupportedEncodingException {
+        Intent data = new Intent();
+        data.setAction(OpenPgpApi.ACTION_GET_KEY);
+        data.putExtra(OpenPgpApi.EXTRA_KEY_ID, mail);
+
+        final InputStream is = new ByteArrayInputStream("".getBytes("UTF-8"));
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        OpenPgpApi api = new OpenPgpApi(originalActivity.getApplicationContext(), mServiceConnection.getService());
+        try {
+            Intent result = api.executeApi(data, is, os);
+            int operationStatus = result.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+            switch(operationStatus) {
+                case OpenPgpApi.RESULT_CODE_SUCCESS: {
+                    long keyId = result.getLongExtra(OpenPgpApi.EXTRA_USER_IDS, 0l);
+                    return keyId;
+                }
+                case OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED: {
+
+                    PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
+                    try {
+                        originalActivity.startIntentSenderForResult(pi.getIntentSender(), 42, null, 0, 0, 0);
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.e(Constants.TAG, "SendIntentException", e);
+                    }
+                    break;
+
+                }
+                case  OpenPgpApi.RESULT_CODE_ERROR: {
+                    OpenPgpError error = result.getParcelableExtra(OpenPgpApi.RESULT_ERROR);
+                    System.out.println(error.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return 0l;
+    }
+
 
     public String encrypt(String targetMail, String content) throws UnsupportedEncodingException {
         Intent data = new Intent();
-        data.setAction(OpenPgpApi.ACTION_ENCRYPT);
-        data.putExtra(OpenPgpApi.EXTRA_USER_IDS, new String[]{targetMail});
+        data.setAction(OpenPgpApi.ACTION_SIGN_AND_ENCRYPT);
+        data.putExtra(OpenPgpApi.EXTRA_USER_IDS, new String[]{ targetMail });
+        data.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, mSignKeyId);
         data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
         final InputStream is = new ByteArrayInputStream(content.getBytes("UTF-8"));
@@ -71,6 +114,10 @@ public class OpenPGPService extends Activity {
                     break;
 
                 }
+                case  OpenPgpApi.RESULT_CODE_ERROR: {
+                    OpenPgpError error = result.getParcelableExtra(OpenPgpApi.RESULT_ERROR);
+                    System.out.println(error.getMessage());
+                }
 
             }
 
@@ -90,7 +137,7 @@ public class OpenPGPService extends Activity {
             switch (requestCode) {
                 case 42: {
                     try {
-                        encrypt("", "");
+                        encrypt("",  "");
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -126,5 +173,55 @@ public class OpenPGPService extends Activity {
         if (mServiceConnection.isBound()) {
             mServiceConnection.unbindFromService();
         }
+    }
+
+    public String decrypt(String criptedMessage) throws UnsupportedEncodingException {
+
+        Intent data = new Intent();
+        data.setAction(OpenPgpApi.ACTION_DECRYPT_VERIFY);
+        data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+
+        final InputStream is = new ByteArrayInputStream(criptedMessage.getBytes("UTF-8"));
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        OpenPgpApi api = new OpenPgpApi(originalActivity, mServiceConnection.getService());
+
+        try {
+            Intent result = api.executeApi(data, is, os);
+            int operationStatus = result.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+            switch(operationStatus) {
+
+                case  OpenPgpApi.RESULT_CODE_SUCCESS: {
+                    OpenPgpDecryptionResult decryptionResult
+                            = result.getParcelableExtra(OpenPgpApi.RESULT_DECRYPTION);
+//                    return decryptionResult.toString();
+                    return os.toString();
+                }
+                case OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED: {
+
+                    PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
+                    try {
+                        originalActivity.startIntentSenderForResult(pi.getIntentSender(), 42, null, 0, 0, 0);
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.e(Constants.TAG, "SendIntentException", e);
+                    }
+                    break;
+
+                }
+                case  OpenPgpApi.RESULT_CODE_ERROR: {
+                    OpenPgpError error = result.getParcelableExtra(OpenPgpApi.RESULT_ERROR);
+                    System.out.println(error);
+                }
+
+            }
+
+            return "";
+        }catch (Exception e) {
+            Log.e("RESULT_ENCRYPT", "Falhou!" + e.getLocalizedMessage());
+        }
+
+        return "";
+
+
     }
 }
