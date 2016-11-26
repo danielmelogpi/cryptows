@@ -2,11 +2,16 @@ package br.ufg.danielmelo.androidgpgclient;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.jr.ob.JSON;
+
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+
+import br.ufg.danielmelo.androidgpgclient.entity.Message;
 
 /**
  * Created by daniel on 26/11/16.
@@ -32,6 +37,13 @@ public class WebsocketServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         Log.d("Websocket ", "Nova mensagem: " + message);
+        try {
+            Message msg = JSON.std.beanFrom(Message.class, message);
+            Log.d("Websocket", "Mensagem recebida" + msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+            conn.send("Erro ao realizar operacao");
+        }
     }
 
     @Override
