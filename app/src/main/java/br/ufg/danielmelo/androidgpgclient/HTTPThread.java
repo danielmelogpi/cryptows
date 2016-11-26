@@ -1,5 +1,7 @@
 package br.ufg.danielmelo.androidgpgclient;
 
+import android.util.Log;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -33,17 +35,17 @@ public class HTTPThread extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session)  {
-
         String operation = session.getHeaders().get("x-operation");
-
+        operation = operation == null? "":operation;
+        Log.d(this.getClass().getName(), operation);
         switch (operation) {
             case "encrypt-and-sign": {
                 String testEncryption = null;
                 String destination = session.getHeaders().get("x-destination-mail");
 
                 try {
-//                    String content = IOUtils.toString(session.getInputStream());
-                    final HashMap<String, String> map = new HashMap<String, String>();
+//                  String content = IOUtils.toString(session.getInputStream());
+                    final HashMap<String, String> map = new HashMap<>();
                     session.parseBody(map);
                     final String content = map.get("postData");
                     testEncryption = openPgpService.encrypt(destination, content);
@@ -78,9 +80,10 @@ public class HTTPThread extends NanoHTTPD {
             case "get-known-keys": {
                 return newFixedLengthResponse("");
             }
+            default: {
+                return newFixedLengthResponse("Este e um servico");
+            }
         }
-
-        return newFixedLengthResponse("unkown operation");
 
     }
 
