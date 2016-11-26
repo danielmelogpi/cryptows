@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.java_websocket.server.WebSocketServer;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
@@ -32,6 +33,8 @@ public class Start extends AppCompatActivity {
 
     public static OpenPGPService openPgpService;
 
+    public static WebSocketServer wsServer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         elContexto = getApplicationContext();
@@ -40,10 +43,12 @@ public class Start extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         openPgpService = new OpenPGPService(this);
-        HTTPThread.iniciar(openPgpService);
-
-        TextView t = (TextView) findViewById(R.id.textView);
+//        HTTPThread.iniciar(openPgpService);
         String ip = IPUtil.wifiIpAddress(this.getBaseContext(), this);
+        wsServer = new WebsocketServer(ip, 8887);
+        wsServer.start();
+        TextView t = (TextView) findViewById(R.id.textView);
+
         System.out.print(ip);
         t.setText("Meu ip é " + ip + ". Acesse os serviços na porta 30001");
 
