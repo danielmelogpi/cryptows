@@ -36,8 +36,27 @@ public class HTTPThread extends NanoHTTPD {
     @Override
     public Response serve(IHTTPSession session)  {
         String operation = session.getHeaders().get("x-operation");
-        operation = operation == null? "":operation;
-        Log.d(this.getClass().getName(), operation);
+        String url = session.getUri();
+        Log.v("http-server", "Respondendo requisicao para " + url);
+        if (url.contains("favicon")) return null;
+
+        switch (url) {
+            case "/api/gpg/encrypt-and-sign":
+                return newFixedLengthResponse(NanoHTTPD.Response.Status.OK
+                        , "application/json", "you have it encripted");
+            case "/api/gpg/sign":
+                return newFixedLengthResponse(NanoHTTPD.Response.Status.OK
+                        , "application/json", "you have it signed");
+            case "/api/gpg/decrypt":
+                return newFixedLengthResponse(NanoHTTPD.Response.Status.OK
+                        , "application/json", "you have it decripted");
+            case "/api/gpg/get-ids":
+                return newFixedLengthResponse(NanoHTTPD.Response.Status.OK
+                        , "application/json", "here are your ids");
+        }
+
+//        operation = operation == null? "":operation;
+
         switch (operation) {
             case "encrypt-and-sign": {
                 String testEncryption = null;
