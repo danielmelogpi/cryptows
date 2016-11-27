@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
+import br.ufg.danielmelo.androidgpgclient.handler.DecryptCallback;
 import br.ufg.danielmelo.androidgpgclient.handler.EncryptCallback;
 import br.ufg.danielmelo.androidgpgclient.handler.MessageHandler;
 import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
@@ -106,6 +107,14 @@ public class Start extends AppCompatActivity {
                     EncryptCallback callback = EncryptCallback.callbackRepo.get(callbackid);
                     if (callback !=null) {
                         openPgpService.encryptAsyncNext(data, callback);
+                    }
+                    break;
+                }
+                case 9913: {
+                    UUID callbackid = UUID.fromString(data.getStringExtra("callback"));
+                    DecryptCallback callback = DecryptCallback.callbackRepo.get(callbackid);
+                    if (callback !=null) {
+                        openPgpService.decryptAsyncNext(data, callback);
                     }
                     break;
                 }

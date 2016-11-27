@@ -31,10 +31,11 @@ public class MessageHandler {
             EncryptCallback enCall = new EncryptCallback(wsocket);
             pgpService.encryptAsync(message, enCall);
         }
-        if (message.getOperation().equals("decrypt")) {
-
+        else if (message.getOperation().equals("decrypt")) {
+            DecryptCallback decCall = new DecryptCallback(wsocket);
+            pgpService.decryptAsync(message, decCall);
         }
-        if (message.getOperation().equals("get-ids")) {
+        else if (message.getOperation().equals("get-ids")) {
 
         }
     }
