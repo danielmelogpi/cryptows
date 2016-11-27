@@ -28,15 +28,13 @@ public class MessageHandler {
         Response res = new Response();
         res.setContent("Conteudo da resposta");
         if (message.getOperation().equals("encrypt")) {
-            EncryptCallback enCall = new EncryptCallback(wsocket);
-            pgpService.encryptAsync(message, enCall);
+            pgpService.encryptAsync(message, new EncryptCallback(wsocket));
         }
         else if (message.getOperation().equals("decrypt")) {
-            DecryptCallback decCall = new DecryptCallback(wsocket);
-            pgpService.decryptAsync(message, decCall);
+            pgpService.decryptAsync(message, new DecryptCallback(wsocket));
         }
         else if (message.getOperation().equals("get-ids")) {
-
+            pgpService.retrieveIdsAsync(message, new IdRetrieverCallback(wsocket));
         }
     }
 

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.java_websocket.server.WebSocketServer;
 import org.openintents.openpgp.OpenPgpError;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 import br.ufg.danielmelo.androidgpgclient.handler.DecryptCallback;
 import br.ufg.danielmelo.androidgpgclient.handler.EncryptCallback;
+import br.ufg.danielmelo.androidgpgclient.handler.IdRetrieverCallback;
 import br.ufg.danielmelo.androidgpgclient.handler.MessageHandler;
 import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
 import br.ufg.danielmelo.androidgpgclient.util.IPUtil;
@@ -59,21 +61,6 @@ public class Start extends AppCompatActivity {
 
     }
 
-    public void signAndEncrypt(Intent data) {
-//        data.setAction(OpenPgpApi.ACTION_SIGN_AND_ENCRYPT);
-//        data.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, mSignKeyId);
-//        if (!TextUtils.isEmpty(mEncryptUserIds.getText().toString())) {
-//            data.putExtra(OpenPgpApi.EXTRA_USER_IDS, mEncryptUserIds.getText().toString().split(","));
-//        }
-//        data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
-//
-//        InputStream is = getInputstream("Meu texto");
-//        ByteArrayOutputStream os = new ByteArrayOutputStream();
-//
-//        OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
-//        api.executeApiAsync(data, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN_AND_ENCRYPT));
-    }
-
     private InputStream getInputstream(String text) {
         InputStream is = null;
         try {
@@ -107,6 +94,7 @@ public class Start extends AppCompatActivity {
                     EncryptCallback callback = EncryptCallback.callbackRepo.get(callbackid);
                     if (callback !=null) {
                         openPgpService.encryptAsyncNext(data, callback);
+                        Toast.makeText(getApplicationContext(), "Encriptando mensagem", Toast.LENGTH_SHORT).show();
                     }
                     break;
                 }
@@ -115,15 +103,24 @@ public class Start extends AppCompatActivity {
                     DecryptCallback callback = DecryptCallback.callbackRepo.get(callbackid);
                     if (callback !=null) {
                         openPgpService.decryptAsyncNext(data, callback);
+                        Toast.makeText(getApplicationContext(), "Decriptando mensagem", Toast.LENGTH_SHORT).show();
                     }
                     break;
                 }
+                case 9915: {
+                    UUID callbackid = UUID.fromString(data.getStringExtra("callback"));
+                    IdRetrieverCallback callback = IdRetrieverCallback.callbackRepo.get(callbackid);
+                    if (callback !=null) {
+                        openPgpService.retrieveIdsAsyncNext(data, callback);
+                    }
+                    break;
+                }
+
             }
         }
 
         if (resultCode == OpenPgpApi.RESULT_CODE_ERROR) {
-            OpenPgpError error = data.getParcelableExtra(OpenPgpApi.RESULT_ERROR);
-            System.err.println(error);
+            System.err.println("ERRO NA OPERAÇAO");
         }
     }
 
