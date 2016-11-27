@@ -4,12 +4,15 @@ import org.java_websocket.WebSocket;
 
 import br.ufg.danielmelo.androidgpgclient.entity.Message;
 import br.ufg.danielmelo.androidgpgclient.entity.Response;
+import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
 
 /**
  * Created by daniel on 26/11/16.
  */
 
 public class MessageHandler {
+
+    private static OpenPGPService pgpService;
 
     private final WebSocket wsocket;
     private Message message;
@@ -25,13 +28,23 @@ public class MessageHandler {
         Response res = new Response();
         res.setContent("Conteudo da resposta");
         if (message.getOperation().equals("encrypt")) {
-            wsocket.send(res.toJson());
+            EncryptCallback enCall = new EncryptCallback(wsocket);
+            pgpService.encryptAsync(message, enCall);
         }
         if (message.getOperation().equals("decrypt")) {
-            
+
         }
         if (message.getOperation().equals("get-ids")) {
 
         }
     }
+
+    public static OpenPGPService getPgpService() {
+        return pgpService;
+    }
+
+    public static void setPgpService(OpenPGPService pgpService) {
+        MessageHandler.pgpService = pgpService;
+    }
+
 }

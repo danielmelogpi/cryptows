@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import br.ufg.danielmelo.androidgpgclient.entity.Message;
+import br.ufg.danielmelo.androidgpgclient.handler.MessageHandler;
 
 /**
  * Created by daniel on 26/11/16.
@@ -40,6 +41,7 @@ public class WebsocketServer extends WebSocketServer {
         try {
             Message msg = JSON.std.beanFrom(Message.class, message);
             Log.d("Websocket", "Mensagem recebida" + msg);
+            new MessageHandler(msg, conn);
         } catch (IOException e) {
             e.printStackTrace();
             conn.send("Erro ao realizar operacao");

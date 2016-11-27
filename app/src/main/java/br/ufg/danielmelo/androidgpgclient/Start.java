@@ -19,7 +19,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.UUID;
 
+import br.ufg.danielmelo.androidgpgclient.handler.EncryptCallback;
+import br.ufg.danielmelo.androidgpgclient.handler.MessageHandler;
 import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
 import br.ufg.danielmelo.androidgpgclient.util.IPUtil;
 
@@ -43,6 +46,7 @@ public class Start extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         openPgpService = new OpenPGPService(this);
+        MessageHandler.setPgpService(openPgpService);
 //        HTTPThread.iniciar(openPgpService);
         String ip = IPUtil.wifiIpAddress(this.getBaseContext(), this);
         wsServer = new WebsocketServer(ip, 8887);
@@ -95,14 +99,14 @@ public class Start extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // try again after user interaction
-        if (resultCode == OpenPgpApi.RESULT_CODE_SUCCESS) {
+        if (resultCode == OpenPgpApi.RESULT_CODE_SUCCESS || resultCode == -1) {
             switch (requestCode) {
                 case 42: {
-//                    try {
-                        System.out.println(data.getExtras());
-//                    } catch (UnsupportedEncodingException e) {
-//                        e.printStackTrace();
-//                    }
+                    UUID callbackid = UUID.fromString(data.getStringExtra("callback"));
+                    EncryptCallback callback = EncryptCallback.callbackRepo.get(callbackid);
+                    if (callback !=null) {
+                        openPgpService.encryptAsyncNext(data, callback);
+                    }
                     break;
                 }
             }
