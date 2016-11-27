@@ -18,7 +18,7 @@ import br.ufg.danielmelo.androidgpgclient.Start;
 import br.ufg.danielmelo.androidgpgclient.entity.Response;
 import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
 
-public class EncryptCallback implements OpenPgpApi.IOpenPgpCallback, Serializable {
+public class EncryptCallback implements OpenPgpApi.IOpenPgpCallback {
 
     private final WebSocket responseSocket;
 
