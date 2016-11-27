@@ -1,0 +1,19 @@
+[
+    {
+        "operation": "encrypt",
+        "content": "Uma mensagem para todos nós",
+        "receiver": "bob@email.com"
+    }
+    
+    ,
+
+    {
+        "operation": "decrypt",
+        "content": "-----BEGIN PGP MESSAGE-----\n\nhQGMA8vCohebMi6WAQwAlpiV1zCV/RDh9uVl140oUOSHVHHfSuqKVx0TaCCZg7qj\nb0natDTJ3cDP57/wGtkdsg3hk0+6deBAoMDtXrUcJXCDEqwquM+2bHEVtbj8f3BZ\n2udmaIoqumOr6sB9tDD3NLbWJRyCIziAMn8CePYBKEC3oPiQsPwgNPT37kn+2F00\nkxxc/PdvnuxQyGY59d/rR5PHEx4hCOxda3fenhuli5iexepPNGQQ9IBv6moU6fZG\n9wcGKZH7pJvRYlOc1oIW8P2XlSav7LMftKkNvhiz+OqtsFF4+ebYeeHCEnUgnC1l\nTeSIbCEPcicPizF74mlgsPzzc6JWQiv+hVdf6A6rRQzckDWsXFsS0hU2ms24xniM\naQ7Xt++KpS1u+4XN80G9XgQDHA0TWztoVnsACmGYFq7LNNjf9SaqGjVnIK71Cd7n\nVhpMzgU1sqjbyuU5ePTEZpvRwnvbsYO1XRkS1roJp7Do+bntm5/KQ6vjsZ/u4u5a\nsgbM73rRWCUXGjZGG4Va0kgBSMuTSjo4an1xR/kgAoKDfZMejdqFUJdS4H8gchKe\nnlQRkvRQs44yuYfV/EN00CA0NbFPPEJRuwAAZ5ELY2+kq0l1sxSJyTI=\n=6T6g\n-----END PGP MESSAGE-----\n\n"
+    }
+    ,
+    {
+        "operation": "get-ids",
+        "content": ""
+    }
+]

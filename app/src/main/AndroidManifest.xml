@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="br.ufg.danielmelo.androidgpgclient">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
@@ -18,11 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".OpenPgpApiActivity"></activity>
+        <activity android:name=".BaseActivity"></activity>
 
-        <activity android:name=".OpenPgpApiActivity">
-        </activity>
-        <activity android:name=".BaseActivity">
-        </activity>
     </application>
 
 </manifest>
