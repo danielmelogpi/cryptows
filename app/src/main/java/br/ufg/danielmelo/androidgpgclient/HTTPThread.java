@@ -1,7 +1,15 @@
 package br.ufg.danielmelo.androidgpgclient;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import br.ufg.danielmelo.androidgpgclient.entity.Response;
@@ -9,6 +17,8 @@ import br.ufg.danielmelo.androidgpgclient.handler.HTTPAsyncMessageHandler;
 import br.ufg.danielmelo.androidgpgclient.handler.HTTPResource;
 import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
 import fi.iki.elonen.NanoHTTPD;
+
+import static android.media.CamcorderProfile.get;
 
 
 public class HTTPThread extends NanoHTTPD {
@@ -50,6 +60,11 @@ public class HTTPThread extends NanoHTTPD {
             }
         }
 
+        String autorizationHeader = session.getHeaders().get("authorization");
+        if (!Auth.getSenhaSessao().equals(autorizationHeader)) {
+            return newFixedLengthResponse(Response.Status.UNAUTHORIZED, MIME_PLAINTEXT, "Not authorized. The Authorization header must be present and updated with the mobile device");
+        }
+
         // get the POST body
         String postBody = files.get("postData");
         String protocol = "";
@@ -69,7 +84,6 @@ public class HTTPThread extends NanoHTTPD {
         if (operation == null) {
             return newFixedLengthResponse(Response.Status.BAD_REQUEST, MIME_PLAINTEXT,  "Requested operation is unknown");
         }
-
         br.ufg.danielmelo.androidgpgclient.entity.Response res = handler.receiveMessage(operation, postBody, protocol);
 
         return newFixedLengthResponse(Response.Status.lookup(res.getCode()), "application/json", res.toJson());

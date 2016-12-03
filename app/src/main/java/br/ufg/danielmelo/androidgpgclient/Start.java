@@ -1,12 +1,15 @@
 package br.ufg.danielmelo.androidgpgclient;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,9 +29,10 @@ public class Start extends AppCompatActivity {
 
     public static Context elContexto;
 
-    public static Activity startThis;
+    public static Start startThis;
 
     public static OpenPGPService openPgpService;
+    private ListView clearedApplicationsView;
 
 //    public static WebSocketServer wsServer;
 
@@ -44,7 +48,16 @@ public class Start extends AppCompatActivity {
         String ip = IPUtil.wifiIpAddress(this.getBaseContext(), this);
         TextView t = (TextView) findViewById(R.id.textView);
         t.setText("Meu ip é " + ip + ". Acesse os serviços na porta 8881");
+        String senhaSessao = UUID.randomUUID().toString().substring(0,8);
+        Auth.setSenhaSessao(senhaSessao);
+        TextView senhaSessaoView = (TextView) findViewById(R.id.senhaSessao);
+        senhaSessaoView.setText(senhaSessao);
     }
+
+    public ListView getClearedApplicationsView() {
+        return clearedApplicationsView;
+    }
+
 
     private InputStream getInputstream(String text) {
         InputStream is = null;
@@ -100,7 +113,6 @@ public class Start extends AppCompatActivity {
             System.err.println("ERRO NA OPERAÇAO");
         }
     }
-
 
 
 }
