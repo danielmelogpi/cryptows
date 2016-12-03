@@ -1,23 +1,17 @@
 package br.ufg.danielmelo.androidgpgclient.entity;
 
 /**
- * Created by daniel on 26/11/16.
+ * HTTP Service default input message
  */
 
 public class Message {
 
-    String operation;
     String content;
-    String sender;
+
+
+    String protocol;
     String receiver;
 
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
 
     public String getReceiver() {
         return receiver;
@@ -25,14 +19,6 @@ public class Message {
 
     public void setReceiver(String receiver) {
         this.receiver = receiver;
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    public void setOperation(String operation) {
-        this.operation = operation;
     }
 
     public String getContent() {
@@ -44,13 +30,21 @@ public class Message {
     }
 
 
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
-                "operation='" + operation + '\'' +
-                ", content='" + content + '\'' +
-                ", sender='" + sender + '\'' +
+                " content='" + content + '\'' +
+                ", protocol='" + protocol + '\'' +
                 ", receiver='" + receiver + '\'' +
                 '}';
     }
+
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.util.Log;
 
-import org.java_websocket.WebSocket;
 import org.openintents.openpgp.util.OpenPgpApi;
 
 import java.io.ByteArrayOutputStream;
@@ -16,20 +15,18 @@ import java.util.UUID;
 import br.ufg.danielmelo.androidgpgclient.Start;
 import br.ufg.danielmelo.androidgpgclient.entity.Response;
 import br.ufg.danielmelo.androidgpgclient.openpgp.OpenPGPService;
+import br.ufg.danielmelo.androidgpgclient.util.ProtocolSet;
 
 public class DecryptCallback implements OpenPgpApi.IOpenPgpCallback {
 
-    private final WebSocket responseSocket;
-
-    private final UUID uniqueId;
+    private final UUID protocol;
     private ByteArrayOutputStream os;
     private OpenPGPService pgpService;
     public static Map<UUID, DecryptCallback> callbackRepo = new HashMap<>();
 
-    DecryptCallback(WebSocket responseSocket) {
-        this.responseSocket = responseSocket;
-        this.uniqueId = UUID.randomUUID();
-        callbackRepo.put(this.uniqueId, this);
+    DecryptCallback(UUID protocol) {
+        this.protocol = protocol;
+        callbackRepo.put(this.protocol, this);
     }
 
     @Override
@@ -37,9 +34,9 @@ public class DecryptCallback implements OpenPgpApi.IOpenPgpCallback {
         switch (result.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)) {
             case OpenPgpApi.RESULT_CODE_SUCCESS: {
                 Response res = new Response();
-                res.setContent(os.toString());
-                responseSocket.send(res.toJson());
-                callbackRepo.remove(this.getUniqueId());
+                res.setCipherContent(os.toString());
+                ProtocolSet.setRequestResult(getProtocol(), res);
+                callbackRepo.remove(getProtocol());
             }
             case OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED: {
                 PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
@@ -53,13 +50,13 @@ public class DecryptCallback implements OpenPgpApi.IOpenPgpCallback {
             }
             case OpenPgpApi.RESULT_CODE_ERROR: {
                 Log.e(getClass().getName(), "Erro ao decriptar");
-                callbackRepo.remove(this.getUniqueId());
+                callbackRepo.remove(this.getProtocol());
             }
         }
     }
 
-    public UUID getUniqueId() {
-        return uniqueId;
+    public UUID getProtocol() {
+        return protocol;
     }
 
     public void setOutput(ByteArrayOutputStream os) {

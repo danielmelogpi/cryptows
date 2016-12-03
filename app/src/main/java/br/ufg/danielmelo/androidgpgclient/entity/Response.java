@@ -3,31 +3,71 @@ package br.ufg.danielmelo.androidgpgclient.entity;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Created by daniel on 26/11/16.
+ * HTTP default response entity
  */
-
 public class Response {
 
-    String content;
-    List<String> ids;
+    String protocol;
+    String plainContent;
+    String cipherContent;
+    String statusMessage;
+    long time;
+    int code;
 
-    public String getContent() {
-        return content;
+    public Response() {
+        time = new Date().getTime();
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public int getCode() {
+        return code;
     }
 
-    public List<String> getIds() {
-        return ids;
+    public void setCode(int code) {
+        this.code = code;
     }
 
-    public void setIds(List<String> ids) {
-        this.ids = ids;
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getPlainContent() {
+        return plainContent;
+    }
+
+    public void setPlainContent(String plainContent) {
+        this.plainContent = plainContent;
+    }
+
+    public String getCipherContent() {
+        return cipherContent;
+    }
+
+    public void setCipherContent(String cipherContent) {
+        this.cipherContent = cipherContent;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 
     public String toJson() {

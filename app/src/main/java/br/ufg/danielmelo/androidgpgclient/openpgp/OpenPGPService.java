@@ -9,24 +9,19 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.openintents.openpgp.IOpenPgpService2;
-import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.openintents.openpgp.util.OpenPgpAppPreference;
-import org.openintents.openpgp.util.OpenPgpKeyPreference;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.UUID;
 
 import br.ufg.danielmelo.androidgpgclient.Constants;
 import br.ufg.danielmelo.androidgpgclient.entity.Message;
 import br.ufg.danielmelo.androidgpgclient.handler.DecryptCallback;
 import br.ufg.danielmelo.androidgpgclient.handler.EncryptCallback;
-import br.ufg.danielmelo.androidgpgclient.handler.IdRetrieverCallback;
 
 public class OpenPGPService extends Activity {
 
@@ -92,7 +87,7 @@ public class OpenPGPService extends Activity {
         data.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, mSignKeyId);
         data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
         data.putExtra("content", msg.getContent());
-        data.putExtra("callback", callback.getUniqueId().toString());
+        data.putExtra("callback", callback.getProtocol().toString());
 
         encryptAsyncNext(data, callback);
     }
@@ -118,7 +113,7 @@ public class OpenPGPService extends Activity {
         data.setAction(OpenPgpApi.ACTION_DECRYPT_VERIFY);
         data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
         data.putExtra("content", msg.getContent());
-        data.putExtra("callback", callback.getUniqueId().toString());
+        data.putExtra("callback", callback.getProtocol().toString());
 
         decryptAsyncNext(data, callback);
     }
@@ -162,25 +157,4 @@ public class OpenPGPService extends Activity {
         }
     }
 
-    public void retrieveIdsAsync(Message msg , IdRetrieverCallback callback) {
-        Intent data = new Intent();
-        data.setAction(OpenPgpApi.ACTION_GET_KEY);
-        data.putExtra(OpenPgpApi.EXTRA_KEY_ID, msg.getContent() );
-        data.putExtra("callback", callback.getUniqueId().toString());
-
-        retrieveIdsAsyncNext(data, callback);
-    }
-
-    public void retrieveIdsAsyncNext(Intent data, IdRetrieverCallback callback) {
-        final InputStream is = new ByteArrayInputStream("".getBytes());
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        callback.setOutput(os);
-        callback.setPGPService(this);
-        OpenPgpApi api = new OpenPgpApi(originalActivity, mServiceConnection.getService());
-        try {
-            api.executeApiAsync(data, is, os, callback);
-        }catch (Exception e) {
-            Log.e(getClass().getName(), "Erro ao executar api para criptografar");
-        }
-    }
 }
