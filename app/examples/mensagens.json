@@ -1,0 +1,67 @@
+/* _____________________________________________________________________________ */
+POST /encrypt-content/
+{
+    "key": "123456",
+    "content": "Mensagem para ser encriptada",
+    "receiver": "bob@email.com"
+}
+Resposta:
+202 Accepted
+{
+    "time": "1287549963",
+    "protocol": "123456789"
+}
+
+/* _____________________________________________________________________________ */
+GET /encrypt-content/protocol/123456789
+Ok:
+200 OK
+{
+    "protocol": "123456789",
+    "status-message":"Message was encrypted and signed",
+    "cipherContent": "PGP MESSAGE"
+}
+Error:
+500 Internal Server Error
+{
+    "protocol": "123456789",
+    "status-message":"Error encripting message"
+}
+Not completed
+404 Not Found
+{
+    "protocol": "123456789",
+    "status-message":"Processing not yet completed"
+}
+/* _____________________________________________________________________________ */
+POST /decrypt-content
+{
+    "key": "123456",
+    "content": "PGP MESSAGE"
+}
+Resposta:
+{
+    "time": "1287549963",
+    "protocol": "123456789"
+}
+/* _____________________________________________________________________________ */
+GET /decrypt-content/protocol/123456789
+Ok:
+200 OK
+{
+    "protocol": "123456789",
+    "status-message":"Content was decrypted",
+    "plainContent": "Uma mensagem legal"
+}
+Error:
+500 Internal Server Error
+{
+    "protocol": "123456789",
+    "status-message":"Error decrypting message"
+}
+Not completed
+404 Not Found
+{
+    "protocol": "123456789",
+    "status-message":"Processing not yet completed"
+}
